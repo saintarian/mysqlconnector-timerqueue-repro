@@ -1,0 +1,33 @@
+version: "3"
+services:
+  db-load-generator:
+    environment:
+      - PYROSCOPE_SERVER_ADDRESS=http://pyroscope:4040
+      - PYROSCOPE_APPLICATION_NAME=db-load-generator
+      - DB_SERVER=db
+    build:
+      context: ./DbLoadGenerator/
+
+  pyroscope:
+    image: pyroscope/pyroscope:latest
+    environment:
+      - PYROSCOPE_LOG_LEVEL=error
+    ports:
+      - '4040:4040'
+    command:
+      - 'server'
+
+  db:
+    ports:
+      - '3306:3306'
+    image: mysql:8.0
+    restart: unless-stopped
+    volumes:
+      - mysql-data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: mysqltest
+    entrypoint: docker-entrypoint.sh --max-allowed-packet=96M --character-set-server=utf8mb4 --log-bin-trust-function-creators=1 --local-infile=1 --max-connections=250 --default-authentication-plugin=mysql_native_password
+
+volumes:
+  mysql-data:
