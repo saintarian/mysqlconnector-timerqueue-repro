@@ -12,7 +12,6 @@ await InsertRecords();
 
 var readingTask = Task.WhenAll(Enumerable.Range(0, 250).Select(i => ListAllRecordsRepeatedly(i)));
 var queueMonitoringTask = MonitorTimerQueue();
-var schedulingDelayMonitoringTask = MonitorSchedulingDelay();
 
 await Task.WhenAll(readingTask, queueMonitoringTask, schedulingDelayMonitoringTask);
 
